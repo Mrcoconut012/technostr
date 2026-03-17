@@ -1,71 +1,74 @@
 using UnityEngine;
-using System.Collections;
 
 public class vertelka : MonoBehaviour
 {
-    [SerializeField] private Transform obj;
-    [SerializeField] private GameObject krupinki;
-    [SerializeField] private string tag1 = "krupa";
-    [SerializeField] private Transform spawnobj;
+    [Header("Настройки материалов")]
+    [SerializeField] private Material materialNormal; // Обычный материал
+    [SerializeField] private Material materialTilted; // Материал при наклоне
+
+    [Header("Компоненты")]
+    [SerializeField] private Renderer targetRenderer; // Рендерер, на котором меняем материал
 
     [Header("Настройки спавна")]
-    [SerializeField] private float minInterval = 0.05f; // Скорость при макс. наклоне (очень быстро)
-    [SerializeField] private float maxInterval = 0.5f;  // Скорость при наклоне 45 градусов (медленно)
-    [SerializeField] private float thresholdAngle = 45f; // Угол, с которого начинается спавн
-    
+    [SerializeField] private GameObject krupinki;
+    [SerializeField] private Transform spawnPoint;
+    [SerializeField] private float thresholdAngle = 40f;
+    [SerializeField] private float minInterval = 0.05f;
+    [SerializeField] private float maxInterval = 0.5f;
+
     private float spawnTimer;
+
     void Start()
     {
-        obj = GetComponent<Transform>();
-        krupinki = GameObject.FindWithTag(tag1);
-        
+        // Если рендерер не назначен, пытаемся найти его на этом же объекте
+        if (targetRenderer == null) targetRenderer = GetComponent<Renderer>();
+
+        // Устанавливаем начальный материал
+        if (targetRenderer != null && materialNormal != null)
+            targetRenderer.material = materialNormal;
+    }
+    public void stop()
+    {
+        gameObject.GetComponent<vertelka>().enabled = false;
     }
     void Update()
     {
-        
-            float angleX = Mathf.Abs(NormalizeAngle(obj.eulerAngles.x));
-            float angleZ = Mathf.Abs(NormalizeAngle(obj.eulerAngles.z));
+        // Считаем угол относительно вертикали
+        float currentAngle = Vector3.Angle(transform.up, Vector3.up);
 
-            // Находим максимальный наклон из двух осей
-            float maxCurrentAngle = Mathf.Max(angleX, angleZ);
-
-            // Если наклон больше порога (45 градусов)
-            if (maxCurrentAngle > thresholdAngle)
+        if (currentAngle > thresholdAngle)
+        {
+            // Меняем материал на "наклонный", если он еще не стоит
+            if (targetRenderer.sharedMaterial != materialTilted && materialTilted != null)
             {
-
-            Debug.Log("ugol");
-                // 1. Вычисляем "интенсивность" наклона от 0 до 1
-                // (например, если наклон 90 градусов, а порог 45, интенсивность будет расти)
-                float tiltIntensity = Mathf.InverseLerp(thresholdAngle, 180f, maxCurrentAngle);
-
-                // 2. Вычисляем текущую задержку: чем выше интенсивность, тем ближе интервал к minInterval
-                float currentInterval = Mathf.Lerp(maxInterval, minInterval, tiltIntensity);
-
-                // 3. Работа таймера
-                spawnTimer += Time.deltaTime;
-                if (spawnTimer >= currentInterval)
-                {
-                    SpawnKrupinki();
-                    spawnTimer = 0f;
-                }
+                targetRenderer.material = materialTilted;
             }
-            else
+
+            // Логика таймера для крупинок
+            float intensity = Mathf.InverseLerp(thresholdAngle, 90f, currentAngle);
+            float currentInterval = Mathf.Lerp(maxInterval, minInterval, intensity);
+
+            spawnTimer += Time.deltaTime;
+            if (spawnTimer >= currentInterval)
             {
-                // Сбрасываем таймер, если объект выровнялся
+                Spawn();
                 spawnTimer = 0f;
             }
-        
-        
+        }
+        else
+        {
+            // Возвращаем обычный материал
+            if (targetRenderer.sharedMaterial != materialNormal && materialNormal != null)
+            {
+                targetRenderer.material = materialNormal;
+            }
+            spawnTimer = 0f;
+        }
     }
 
-    void SpawnKrupinki()
+    void Spawn()
     {
-        Instantiate(krupinki, spawnobj.position, Quaternion.identity);
-    }
-
-    float NormalizeAngle(float angle)
-    {
-        if (angle > 180f) return angle - 360f;
-        return angle;
+        if (krupinki != null && spawnPoint != null)
+            Instantiate(krupinki, spawnPoint.position, Quaternion.identity);
     }
 }

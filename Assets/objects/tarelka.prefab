@@ -124,6 +124,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: e5198a04c19de5941a1eb8539ca3379f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1262695228667638190}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: e5198a04c19de5941a1eb8539ca3379f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1183152637110005671}
   m_SourcePrefab: {fileID: 100100000, guid: e5198a04c19de5941a1eb8539ca3379f, type: 3}
 --- !u!4 &232419294962694922 stripped
 Transform:
@@ -212,7 +215,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
@@ -358,3 +361,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34116388196261e42bce39cca77d289f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::smartgrabobject
+--- !u!114 &1183152637110005671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 608664015803179440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 820786c204138174c8b64153f147fa1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::testovtarelky
+  prefabToSpawn: {fileID: 888393248633333460, guid: a7d9e41b5678959488d4ac95022f62cd, type: 3}
+  destroyIngredients: 1
+  requiredNames:
+  - muka
+  - salt
+  - egg
